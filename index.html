@@ -356,7 +356,7 @@ function newPlay(o={}){
   const court=o.court||'half',off=o.off||(court==='full'?'Inbound spread':'5-Out'),def=o.def||'None';
   const p={id:uid(),name:'New play',court,tags:['Offense'],off,def,ball:'o1',actions:[],notes:'',by:'You',...o};
   p.players=o.players||mkPlayers(court,off,def);
-  if(!o.players&&court==='half'&&off==='5-Out'){let lw=12;try{if(S.team.level==='pro')lw=16}catch(e){}const by=7.6;/* 4 and 5 start on the blocks */
+  delete p.fresh;if(o.fresh&&!o.players&&court==='half'&&off==='5-Out'){let lw=12;try{if(S.team.level==='pro')lw=16}catch(e){}const by=7.6;/* 4 and 5 start on the blocks */
     const q4=p.players.find(q=>q.id==='o4'),q5=p.players.find(q=>q.id==='o5');if(q4){q4.x=25-lw/2-.7;q4.y=by}if(q5){q5.x=25+lw/2+.7;q5.y=by}}
   normPlay(p);return p}
 const SIDEL={o:'Offense',d:'Defense'};
@@ -446,7 +446,7 @@ let saveT;function persist(){clearTimeout(saveT);saveT=setTimeout(()=>{try{local
 let FMIN=false;try{FMIN=localStorage.getItem('hoops.fmin')==='1'}catch(e){}
 const U={dq:'',dcat:'',psub:'plans',fside:'a',fcat:'a',fmin:FMIN,tsub:'roster',tab:'playbook',filter:'All',pv:null,open:new Set()};
 const B={play:null,openId:null,step:1,mode:'draw',tool:'cut',showDef:true,undo:[],dirty:false,drag:null,preview:null};
-B.play=newPlay();
+B.play=newPlay({fresh:1});
 
 /* ===== board math ===== */
 const maxStep=p=>p.actions.reduce((m,a)=>Math.max(m,a.step),0);
@@ -589,12 +589,13 @@ function drawPlayer(c,p,x,y,r,alpha,lw,ring){
   else{c.fillStyle='#c8321f';const q=r*.92,k=r*.4;c.beginPath();c.moveTo(x-q+k,y-q);c.arcTo(x+q,y-q,x+q,y+q,k);c.arcTo(x+q,y+q,x-q,y+q,k);c.arcTo(x-q,y+q,x-q,y-q,k);c.arcTo(x-q,y-q,x+q,y-q,k);c.closePath();c.fill();c.stroke()}
   if(ring){c.strokeStyle='#ffe66b';c.lineWidth=lw*1.4;c.beginPath();c.arc(x,y,r*1.3,0,7);c.stroke()}
   const lab=spot(p.n-1);c.fillStyle='#fff';chCenter(c,lab,x,y,lab.length>1?r*.88:r*1.2,'"Saira Condensed",Arial','800');c.restore()}
+function ballSeams(c,x,y,r){c.beginPath();c.moveTo(x-r,y);c.lineTo(x+r,y);c.moveTo(x,y-r);c.lineTo(x,y+r);
+  for(const sd of[-1,1]){c.moveTo(x+sd*r*.7,y-r*.7);c.quadraticCurveTo(x+sd*r*.1,y,x+sd*r*.7,y+r*.7)}c.stroke()}
 function drawBall(c,x,y,r,lw){
-  c.save();c.fillStyle='#fff';c.beginPath();c.arc(x,y,r+lw*.9,0,7);c.fill();c.fillStyle='#1a1a1a';c.beginPath();c.arc(x,y,r+lw*.35,0,7);c.fill();c.restore();
-  if(CHK){c.save();c.fillStyle='#ff8a1f';c.beginPath();c.arc(x,y,r,0,7);c.fill();c.strokeStyle='#1a1a1a';c.lineWidth=lw*.9;c.stroke();
-    c.beginPath();c.moveTo(x-r,y);c.lineTo(x+r,y);c.moveTo(x,y-r);c.lineTo(x,y+r);c.stroke();c.restore();return}
+  if(CHK){r*=1.1;c.save();c.fillStyle='#ff8a1f';c.beginPath();c.arc(x,y,r,0,7);c.fill();c.strokeStyle='#1a1a1a';c.lineWidth=lw*.8;ballSeams(c,x,y,r);
+    c.strokeStyle='#f4f6f2';c.lineWidth=lw*1.1;c.beginPath();c.arc(x,y,r,0,7);c.stroke();c.restore();return}
   c.save();c.fillStyle='#ff8a1f';c.strokeStyle='#1a1a1a';c.lineWidth=lw*.7;c.beginPath();c.arc(x,y,r,0,7);c.fill();c.stroke();
-  c.beginPath();c.moveTo(x-r,y);c.lineTo(x+r,y);c.moveTo(x,y-r);c.lineTo(x,y+r);c.stroke();c.restore()}
+  c.lineWidth=lw*.55;ballSeams(c,x,y,r);c.restore()}
 const ballOff=r=>r*.95;
 
 function sizeCanvas(cv){const dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;if(!w||!h)return null;if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr)}return{w,h,dpr}}
@@ -1053,7 +1054,7 @@ const act={
   fcat:t=>{U.fcat=t.dataset.v;renderPlaybook()},
   fmin:()=>{U.fmin=!U.fmin;try{localStorage.setItem('hoops.fmin',U.fmin?'1':'0')}catch(e){}renderPlaybook()},
   fexp:()=>{U.fmin=false;try{localStorage.setItem('hoops.fmin','0')}catch(e){}renderPlaybook()},
-  newPlay:()=>guardDirty(()=>{B.play=newPlay();B.openId=null;B.step=1;B.undo=[];B.dirty=false;setTab('chalk');playSheet()}),
+  newPlay:()=>guardDirty(()=>{B.play=newPlay({fresh:1});B.openId=null;B.step=1;B.undo=[];B.dirty=false;setTab('chalk');playSheet()}),
   openPlay:t=>{const p=S.plays.find(x=>x.id===t.dataset.id);try{closeSheet()}catch(e){}if(p)guardDirty(()=>openPlayOnBoard(p))},
   playMenu:(t,e)=>{e.stopPropagation();const id=t.dataset.id,p=S.plays.find(x=>x.id===id);
     sheet(`<div class="stack"><h3>${esc(p.name)}</h3><div class="btns"><button class="btn" data-act="openPlay" data-id="${id}">Edit play</button><button class="btn" data-act="dupPlay" data-id="${id}">Duplicate</button><button class="btn danger" data-act="delPlay" data-id="${id}">Delete</button><button class="btn ghost" data-act="closeSheet">Cancel</button></div></div>`)},
@@ -1087,7 +1088,7 @@ const act={
   psSave:()=>{readSheetFields();closeSheet();savePlay(false)},
   psSaveNew:()=>{readSheetFields();closeSheet();savePlay(true)},
   psDone:()=>{readSheetFields();B.dirty=true;closeSheet();updateChalkUI();redraw()},
-  psDelete:()=>{S.plays=S.plays.filter(x=>x.id!==B.openId);B.openId=null;B.dirty=false;B.play=newPlay();B.undo=[];persist();closeSheet();setTab('playbook')},
+  psDelete:()=>{S.plays=S.plays.filter(x=>x.id!==B.openId);B.openId=null;B.dirty=false;B.play=newPlay({fresh:1});B.undo=[];persist();closeSheet();setTab('playbook')},
   /* practice */
   newPlan:t=>{const n=+t.dataset.v,pl={id:uid(),name:n===15?'New warm-up':'New practice',target:n,blocks:[],notes:'',date:''};S.plans.unshift(pl);U.pv=pl.id;persist();renderPractice()},
   openPlan:t=>{U.pv=t.dataset.id;renderPractice();$('#v-team').scrollTop=0},
@@ -1131,7 +1132,7 @@ const act={
   copyBackup:()=>copyText(JSON.stringify(S),'Backup copied. Paste it somewhere safe.'),
   restoreSheet:()=>sheet(`<div class="stack"><h3>Restore a backup</h3><p class="muted">Paste a backup you copied earlier. This replaces everything in the app.</p><textarea id="rs-text" placeholder="Paste backup here"></textarea><div class="btns"><button class="btn pri" data-act="restoreGo">Restore</button><button class="btn ghost" data-act="closeSheet">Cancel</button></div></div>`),
   restoreGo:()=>{try{const o=JSON.parse($('#rs-text').value);if(!o||!Array.isArray(o.plays)||!Array.isArray(o.plans))throw 0;S=o;S.settings=S.settings||{theme:'system'};S.roster=S.roster||[];fixLU();persist();closeSheet();applyTheme();B.play=newPlay();B.openId=null;B.dirty=false;setTab('team');toast('Backup restored')}catch(e){toast('That does not look like a backup')}},
-  resetAll:()=>{S=seed();fixLU();persist();closeSheet();applyTheme();B.play=newPlay();B.openId=null;B.dirty=false;U.pv=null;setTab('playbook');toast('Reset to starter plays')}
+  resetAll:()=>{S=seed();fixLU();persist();closeSheet();applyTheme();B.play=newPlay({fresh:1});B.openId=null;B.dirty=false;U.pv=null;setTab('playbook');toast('Reset to starter plays')}
 };
 function copyText(txt,msg){try{navigator.clipboard.writeText(txt).then(()=>toast(msg),()=>fallbackCopy(txt))}catch(e){fallbackCopy(txt)}}
 function fallbackCopy(txt){sheet(`<div class="stack"><h3>Copy this</h3><p class="muted">Your browser blocked automatic copying. Select the text and copy it.</p><textarea id="cp" style="min-height:160px">${esc(txt)}</textarea><button class="btn pri" data-act="closeSheet">Done</button></div>`);setTimeout(()=>{const t=$('#cp');t&&t.select()},60)}
