@@ -491,23 +491,33 @@ function chDust(c,v){const R=chRng(77);c.save();c.fillStyle='#f4f6f2';
   for(let i=0;i<14;i++){c.globalAlpha=.012+R()*.02;c.beginPath();const x=R()*50,y=R()*v.h;c.ellipse(x,y,4+R()*10,1.2+R()*2.5,R()*3,0,7);c.fill()}
   c.restore()}
 const _wood={};/*v2*/
+const WOOD_TONES=['#a8987c','#9d8c6e','#b2a389','#947f61','#ab9b80','#a09073','#8e7a5c'];
+function woodPlank(g,R,x,y,w,px,yc){const len=2.5+R()*8,t=WOOD_TONES[Math.floor(R()*WOOD_TONES.length)];
+  g.fillStyle=t;g.fillRect(x,y,w+.02,len+.02);g.lineCap='round';const n=4+Math.floor(R()*5);
+  for(let k=0;k<n;k++){const gx=x+.15+R()*(w-.3);g.strokeStyle=R()<.5?'rgba(120,95,60,'+(.1+R()*.14)+')':'rgba(255,250,235,'+(.14+R()*.16)+')';g.lineWidth=px*(.7+R()*1.1);
+    g.beginPath();g.moveTo(gx,Math.max(y,yc));let yy=y,ph=R()*6;while(yy<y+len){yy+=.9;g.lineTo(gx+Math.sin(yy*.9+ph)*.06,Math.min(yy,y+len))}g.stroke()}
+  g.strokeStyle='rgba(95,80,55,.4)';g.lineWidth=px*1.1;g.beginPath();g.moveTo(x,y);g.lineTo(x+w,y);g.stroke();return len}
+/* paints the court's wood (identical pieces to the cards) and keeps going past its edges: ext={l,r,t,b} in feet */
+function woodPaint(g,sc,h,ext){const e=ext||{l:0,r:0,t:0,b:0},cols=40,w=50/cols,px=1/sc,R=chRng(11),yc=(ext?-1e9:0);
+  g.save();g.translate(e.l,e.t);
+  const sep=(x)=>{g.strokeStyle='rgba(95,80,55,.35)';g.lineWidth=px*1.1;g.beginPath();g.moveTo(x,-e.t);g.lineTo(x,h+e.b);g.stroke()};
+  for(let i=0;i<cols;i++){const x=i*w;let y=-R()*9;const y0=y;
+    while(y<h){y+=woodPlank(g,R,x,y,w,px,yc)}
+    if(e.b>0||e.t>0){const R2=chRng(500+i);let yy=y;while(yy<h+e.b)yy+=woodPlank(g,R2,x,yy,w,px,yc);
+      yy=y0;while(yy>-e.t){const R3=chRng(900+i+Math.floor(yy*7)+1000);const len=2.5+R3()*8;yy-=len;g.save();g.beginPath();g.rect(x-.01,yy,w+.04,len+.05);g.clip();const R4=chRng(1300+i*37+Math.floor(-yy*5));woodPlankAt(g,R4,x,yy,w,px,len);g.restore()}}
+    sep(i*w)}
+  const nl=Math.ceil(e.l/w),nr=Math.ceil(e.r/w);
+  for(let k=1;k<=nl+nr;k++){const i=k<=nl?-k:cols+k-nl-1,x=i*w,R2=chRng(2000+(i+99)*13);let y=-e.t-R2()*9;
+    while(y<h+e.b)y+=woodPlank(g,R2,x,y,w,px,yc);sep(x)}
+  g.restore()}
+function woodPlankAt(g,R,x,y,w,px,len){/* a plank of known length (used above the court so it ends exactly where the court's first plank begins) */
+  const t=WOOD_TONES[Math.floor(R()*WOOD_TONES.length)];g.fillStyle=t;g.fillRect(x,y,w+.02,len+.02);g.lineCap='round';const n=4+Math.floor(R()*5);
+  for(let k=0;k<n;k++){const gx=x+.15+R()*(w-.3);g.strokeStyle=R()<.5?'rgba(120,95,60,'+(.1+R()*.14)+')':'rgba(255,250,235,'+(.14+R()*.16)+')';g.lineWidth=px*(.7+R()*1.1);
+    g.beginPath();g.moveTo(gx,y);let yy=y,ph=R()*6;while(yy<y+len){yy+=.9;g.lineTo(gx+Math.sin(yy*.9+ph)*.06,Math.min(yy,y+len))}g.stroke()}
+  g.strokeStyle='rgba(95,80,55,.4)';g.lineWidth=px*1.1;g.beginPath();g.moveTo(x,y);g.lineTo(x+w,y);g.stroke()}
 function woodFloor(c,v){const sc=c.getTransform().a,h=v.h,key=v.court+'|'+Math.round(sc*2);
   let off=_wood[key];
-  if(!off){off=document.createElement('canvas');off.width=Math.ceil(50*sc);off.height=Math.ceil(h*sc);const g=off.getContext('2d');g.scale(sc,sc);
-    const R=chRng(11),cols=40,w=50/cols,tones=['#a8987c','#9d8c6e','#b2a389','#947f61','#ab9b80','#a09073','#8e7a5c'],px=1/sc;
-    for(let i=0;i<cols;i++){let y=-R()*9;
-      while(y<h){const len=2.5+R()*8,t=tones[Math.floor(R()*tones.length)],x=i*w;
-        g.fillStyle=t;g.fillRect(x,y,w+.02,len+.02);
-        // grain
-        g.lineCap='round';const n=4+Math.floor(R()*5);
-        for(let k=0;k<n;k++){const gx=x+.15+R()*(w-.3);g.strokeStyle=R()<.5?'rgba(120,95,60,'+(.1+R()*.14)+')':'rgba(255,250,235,'+(.14+R()*.16)+')';g.lineWidth=px*(.7+R()*1.1);
-          g.beginPath();g.moveTo(gx,Math.max(y,0));let yy=y,ph=R()*6;while(yy<y+len){yy+=.9;g.lineTo(gx+Math.sin(yy*.9+ph)*.06,Math.min(yy,y+len))}g.stroke()}
-        if(false){const kx=x+w*(.3+R()*.4),ky=y+len*(.2+R()*.6);g.fillStyle='rgba(120,70,25,.55)';g.beginPath();g.ellipse(kx,ky,.14+R()*.06,.2+R()*.07,0,0,7);g.fill();g.strokeStyle='rgba(140,85,35,.3)';g.lineWidth=px;g.beginPath();g.ellipse(kx,ky,.4,.6,0,0,7);g.stroke()}
-        // seams
-        g.strokeStyle='rgba(95,80,55,.4)';g.lineWidth=px*1.1;g.beginPath();g.moveTo(x,y);g.lineTo(x+w,y);g.stroke();
-        y+=len}
-      g.strokeStyle='rgba(95,80,55,.35)';g.lineWidth=px*1.1;g.beginPath();g.moveTo(i*w,0);g.lineTo(i*w,h);g.stroke()}
-    _wood[key]=off}
+  if(!off){off=document.createElement('canvas');off.width=Math.ceil(50*sc);off.height=Math.ceil(h*sc);const g=off.getContext('2d');g.scale(sc,sc);woodPaint(g,sc,h,null);_wood[key]=off}
   c.drawImage(off,0,0,50,h)}
 function chScribble(c,v,lw){const R=chRng(31),h=v.h,PW=3.125,tones=[['#c98f52','#b57a40'],['#d9a066','#c48a4e']];c.save();c.lineCap='round';c.lineJoin='round';
   c.beginPath();c.rect(-.3,-.3,50.6,h+.6);c.clip();
@@ -588,7 +598,7 @@ function sizeCanvas(cv){const dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=
 function drawBoard(cv,play,o={}){
   const z=sizeCanvas(cv);if(!z)return null;
   const c=cv.getContext('2d'),v=viewOf(play.court,z.w,z.h,!!o.chalk||!!o.thumb),dark=o.dark??isDark();CHK=!!o.chalk;CHW=!CHK&&!!o.thumb;CHF=!!o.fill||!!(cv.closest&&cv.closest('#pv'));
-  c.setTransform(z.dpr,0,0,z.dpr,0,0);c.clearRect(0,0,z.w,z.h);CHS=v.s;if(CHK){c.fillStyle='#050505';c.fillRect(0,0,z.w,z.h)}
+  c.setTransform(z.dpr,0,0,z.dpr,0,0);c.clearRect(0,0,z.w,z.h);CHS=v.s;cv._view=v;if(CHK){c.fillStyle='#050505';c.fillRect(0,0,z.w,z.h)}
   c.setTransform(z.dpr*v.s,0,0,z.dpr*v.s,z.dpr*v.ox,z.dpr*v.oy);
   const lw=Math.max(.3,(o.thumb?1.5:1.6)/v.s),r=o.thumb?Math.max(1.8,5/v.s):pr(v);
   drawCourt(c,v,dark,lw);
@@ -799,10 +809,13 @@ function runCard(t){
 
 /* ===== full-screen play viewer ===== */
 let PV_JOBS=null,pvId=null;
-const _pvTex={};
-function pvWood(ct){const h=ct==='full'?94:47;if(_pvTex[ct])return _pvTex[ct];const sc=12,t=document.createElement('canvas');t.width=50*sc;t.height=h*sc;const g=t.getContext('2d');g.scale(sc,sc);woodFloor(g,{court:ct==='full'?'full':'half',h});return _pvTex[ct]=t.toDataURL('image/jpeg',.9)}
-function pvBg(o,p,cv){const r=cv.getBoundingClientRect(),w=r.width,h=p.court==='full'?94:47,k=w/50;
-  o.style.background=`url(${pvWood(p.court)}) ${r.left}px ${r.top}px/${w}px ${h*k}px`}
+let _pvKey='';
+function pvBg(o,p,cv){const cr=cv.getBoundingClientRect(),V=cv._view;if(!cr.width||!V)return;const k=V.s,h=p.court==='full'?94:47,r={left:cr.left+V.ox,top:cr.top+V.oy,right:cr.left+V.ox+50*k,bottom:cr.top+V.oy+h*k,width:50*k},
+  e={l:Math.ceil(Math.max(0,r.left)/k)+1,r:Math.ceil(Math.max(0,innerWidth-r.right)/k)+1,t:Math.ceil(Math.max(0,r.top)/k)+1,b:Math.ceil(Math.max(0,innerHeight-r.bottom)/k)+1},
+  sc=Math.max(5,Math.min(14,k*Math.min(devicePixelRatio||1,2))),key=[p.court,e.l,e.r,e.t,e.b,Math.round(sc)].join('|');
+  if(key!==_pvKey||!o.dataset.bgk||o.dataset.bgk!==key){const W=50+e.l+e.r,H=h+e.t+e.b,t=document.createElement('canvas');t.width=Math.ceil(W*sc);t.height=Math.ceil(H*sc);const g=t.getContext('2d');g.scale(sc,sc);woodPaint(g,sc,h,e);
+    o.style.backgroundImage=`url(${t.toDataURL('image/jpeg',.9)})`;o.dataset.bgk=key;_pvKey=key;o._bgE=e}
+  const E=o._bgE||e;o.style.backgroundRepeat='no-repeat';o.style.backgroundSize=`${(50+E.l+E.r)*k}px ${(h+E.t+E.b)*k}px`;o.style.backgroundPosition=`${r.left-E.l*k}px ${r.top-E.t*k}px`}
 function pvFit(){const o=document.getElementById('pv');if(!o)return;const p=S.plays.find(x=>x.id===pvId);if(!p)return;
   const bw=o.querySelector('.pvbw'),cv=bw.querySelector('canvas');
   pvBg(o,p,cv);if(cardRun&&cardRun.cv===cv)return;
