@@ -6,7 +6,8 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Hoops"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#12182a">
+<meta name="theme-color" content="#0b0b0d">
+<style>#splash{position:fixed;inset:0;z-index:99999;background:#0b0b0d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .45s}#splash.out{opacity:0;pointer-events:none}#splash svg{border-radius:32px;box-shadow:0 0 40px #ff7a1a33}#splash b{font:800 22px/1 "Saira Condensed",Inter,system-ui,sans-serif;letter-spacing:.2em;color:#ff7a1a;text-transform:uppercase;text-shadow:0 0 14px #ff7a1a88}</style>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Public+Sans:wght@400;600;700&family=Saira+Condensed:wght@600;800&display=swap">
 <style>
@@ -248,7 +249,7 @@ html[data-lay=land] #v-chalk .ch-top{flex-wrap:wrap}html[data-lay=land] #v-chalk
   .view .col{gap:10px}
 }
 </style></head>
-<body>
+<body><div id="splash"><svg id="splash-ic" width="140" height="140" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><filter id="sf" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2"/></filter><radialGradient id="sv" cx=".5" cy=".4" r=".8"><stop offset="0" stop-color="#1a1d24"/><stop offset="1" stop-color="#0b0b0d"/></radialGradient></defs><rect width="100" height="100" fill="url(#sv)"/><g filter="url(#sf)" opacity=".85"><g fill="none" stroke="#ff7a1a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><rect x="24" y="18" width="52" height="68" rx="6"/><rect x="38" y="11" width="24" height="12" rx="4"/><path d="M34 42l8 8m0-8l-8 8"/><circle cx="62" cy="46" r="4.8"/><path d="M36 72C46 72 56 66 60 55" stroke-dasharray="3.5 3"/><path d="M55 56l5.5-2 1.5 6"/></g></g><g fill="none" stroke="#ff7a1a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><rect x="24" y="18" width="52" height="68" rx="6"/><rect x="38" y="11" width="24" height="12" rx="4"/><path d="M34 42l8 8m0-8l-8 8"/><circle cx="62" cy="46" r="4.8"/><path d="M36 72C46 72 56 66 60 55" stroke-dasharray="3.5 3"/><path d="M55 56l5.5-2 1.5 6"/></g></svg><b>Hoops Playbook</b></div><script>addEventListener("load",function(){setTimeout(function(){var e=document.getElementById("splash");e.classList.add("out");setTimeout(function(){e.remove()},500)},500)})</script>
 <section class="view" id="v-playbook"></section>
 <section class="view" id="v-chalk" hidden>
   <div class="col">
