@@ -579,7 +579,7 @@ const _mc=document.createElement('canvas').getContext('2d');
 function chCenter(c,t,x,y,size,fam,wt){_mc.font=`${wt||''} 100px ${fam}`;const m=_mc.measureText(t),k=size/100,l=(m.actualBoundingBoxLeft||0)*k,rr=(m.actualBoundingBoxRight||m.width)*k,as=(_mc.measureText('H').actualBoundingBoxAscent||70)*k;
   c.font=`${wt||''} ${size}px ${fam}`;c.textAlign='left';c.textBaseline='alphabetic';c.fillText(t,x-(rr-l)/2,y+as/2)}
 function drawPlayer(c,p,x,y,r,alpha,lw,ring){
-  if(CHK){const col=p.team==='o'?'#8fc1ff':'#ff9a8a';c.save();c.globalAlpha=alpha;c.fillStyle='#0b0b0b';c.lineWidth=lw*1.2;
+  if(CHK){const col=p.team==='o'?'#39ff14':'#ff9a8a';c.save();c.globalAlpha=alpha;c.fillStyle='#0b0b0b';c.lineWidth=lw*1.2;
     c.beginPath();if(p.team==='o')c.arc(x,y,r,0,7);else{const q=r*.92;c.rect(x-q,y-q,q*2,q*2)}c.fill();
     for(let i=0;i<2;i++){c.strokeStyle=chPat(c,col);c.save();c.translate(i?.06:-.06,i?-.05:.05);c.stroke();c.restore()}
     if(ring){c.strokeStyle='#ffe66b';c.lineWidth=lw*1.4;c.beginPath();c.arc(x,y,r*1.35,0,7);c.stroke()}
