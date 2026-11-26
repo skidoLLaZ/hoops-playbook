@@ -1073,7 +1073,8 @@ function armed(t){const need=CONF[t.dataset.act];if(!need)return true;
   return false}
 document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(t&&act[t.dataset.act]){if(!armed(t))return;if(B.done&&!['run','runReset'].includes(t.dataset.act)){B.done=false;B.runPos=null;B.runBall=null;redraw()}act[t.dataset.act](t,e)}});
 function setNav(){const w=innerWidth,h=innerHeight;let m='bottom';
-  if(w>h&&h<520)m='compact';else if(w>=600)m='top';else if(w>=460&&w<h)m='rail-right';
+  const sw=Math.min(screen.width||0,screen.height||0);
+  if(w>h&&h<520)m='compact';else if(w>=600)m='top';else if(w<h&&(w>=460||(sw>=455&&sw<560)))m='rail-right';
   document.documentElement.dataset.lay=(w>h&&w>=640)?'land':'port';
   if(document.documentElement.dataset.nav!==m){document.documentElement.dataset.nav=m;$('#tabbar').classList.remove('min')}}
 setNav();addEventListener('resize',setNav);addEventListener('orientationchange',setNav);
