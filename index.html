@@ -259,7 +259,7 @@ html[data-lay=land] #v-chalk .ch-top{flex-wrap:wrap}html[data-lay=land] #v-chalk
   .view .col{gap:10px}
 }
 .play:not(.open) .jobs,.play:not(.open) .prow{display:none}.play .ptop .btn.on{background:var(--accbg,#dbe6ff)}
-.ptop .nm{display:flex;align-items:center;gap:8px;min-width:0}.ptop .nm h3{margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ibtn{padding:2px 9px;flex:none}
+.ptop{flex-wrap:wrap;row-gap:6px}.ptop>span:last-child{margin-left:auto}.ptop .nm{flex:1 0 128px;display:flex;align-items:center;gap:8px;min-width:0}.ptop .nm h3{margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ibtn{padding:2px 9px;flex:none}.mbtn{padding:2px 10px;flex:none;font-weight:800;letter-spacing:.04em;line-height:1}
 #pv{position:fixed;inset:0;z-index:300;background:#a39378;animation:pvin .18s ease-out;overflow:hidden}
 @keyframes pvin{from{opacity:0}to{opacity:1}}
 .pvstage{display:contents}.pvbw{position:absolute;inset:0}.pvbw canvas{display:block;width:100%;height:100%}
@@ -854,8 +854,7 @@ function renderPlaybook(){
     return L.length?`<ul class="jobs">${L.join('')}</ul>`:''};
   PV_JOBS=jobs;
   const card=p=>`<div class="card play" data-act="viewPlay" data-id="${p.id}"><canvas data-thumb="${p.id}" style="aspect-ratio:${p.court==='full'?'50.8/99.2':'50.8/47.6'};background:#b98650"></canvas>
-    <button class="more" data-act="playMenu" data-id="${p.id}" aria-label="More">⋯</button>
-    <div class="pb"><div class="ptop"><span class="nm"><h3>${esc(p.name)}</h3><button class="btn sm ibtn" data-act="cardInfo" data-id="${p.id}" aria-label="Show details" aria-expanded="false">ⓘ</button></span><span style="display:flex;gap:6px;flex:none"><button class="btn sm" data-act="cardReset" data-id="${p.id}" hidden>⟲ Reset</button><button class="btn sm go" data-act="runCard" data-id="${p.id}">▶ Run</button></span></div>${jobs(p)}<div class="prow"><div class="tags">${p.tags.map(t=>`<span class="tag ${p.focus==='d'?'d':'o'}">${esc(t)}</span>`).join('')}</div><button class="btn sm" data-act="openPlay" data-id="${p.id}">Edit</button></div></div></div>`;
+    <div class="pb"><div class="ptop"><span class="nm"><h3>${esc(p.name)}</h3><button class="btn sm ibtn" data-act="cardInfo" data-id="${p.id}" aria-label="Show details" aria-expanded="false">ⓘ</button></span><span style="display:flex;gap:6px;flex:none"><button class="btn sm" data-act="cardReset" data-id="${p.id}" hidden>⟲ Reset</button><button class="btn sm go" data-act="runCard" data-id="${p.id}">▶ Run</button><button class="btn sm mbtn" data-act="playMenu" data-id="${p.id}" aria-label="More options">⋯</button></span></div>${jobs(p)}<div class="prow"><div class="tags">${p.tags.map(t=>`<span class="tag ${p.focus==='d'?'d':'o'}">${esc(t)}</span>`).join('')}</div><button class="btn sm" data-act="openPlay" data-id="${p.id}">Edit</button></div></div></div>`;
   const sect=(sd,c)=>grp(sd,c).length?`<div class="sect"><div class="eyebrow">${CATH[sd][c]}</div><div class="grid ${grp(sd,c).every(p=>p.court==='full')?'full':'half'}">${grp(sd,c).map(card).join('')}</div></div>`:'';
   v.innerHTML=`<div class="col">
    <div class="head"><div><h1>Hoops Playbook</h1><div class="eyebrow teaminfo">${esc(S.team.name)}${S.team.grade?' · '+esc(S.team.grade):''}</div></div></div>
