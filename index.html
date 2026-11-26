@@ -491,7 +491,6 @@ function chPat(c,col){const k=col+'|'+CHS.toFixed(1);if(_pat[k])return _pat[k];
   const p=c.createPattern(t,'repeat');if(p.setTransform)p.setTransform(new DOMMatrix().scale(.5/CHS));return _pat[k]=p}
 function chDust(c,v){const R=chRng(77);c.save();c.fillStyle='#f4f6f2';
   for(let i=0;i<1400;i++){c.globalAlpha=.03+R()*.07;const z=.12+R()*.35;c.fillRect(v.x0+R()*(v.x1-v.x0),v.y0+R()*(v.y1-v.y0),z,z)}
-  for(let i=0;i<14;i++){c.globalAlpha=.012+R()*.02;c.beginPath();const x=R()*50,y=R()*v.h;c.ellipse(x,y,4+R()*10,1.2+R()*2.5,R()*3,0,7);c.fill()}
   c.restore()}
 const _wood={};/*v2*/
 const WOOD_TONES=['#a8987c','#9d8c6e','#b2a389','#947f61','#ab9b80','#a09073','#8e7a5c'];
