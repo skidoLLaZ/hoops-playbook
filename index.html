@@ -593,7 +593,7 @@ function ballSeams(c,x,y,r){c.beginPath();c.moveTo(x-r,y);c.lineTo(x+r,y);c.move
   for(const sd of[-1,1]){c.moveTo(x+sd*r*.7,y-r*.7);c.quadraticCurveTo(x+sd*r*.1,y,x+sd*r*.7,y+r*.7)}c.stroke()}
 function drawBall(c,x,y,r,lw){
   if(CHK){r*=1.1;c.save();c.fillStyle='#ff8a1f';c.beginPath();c.arc(x,y,r,0,7);c.fill();c.strokeStyle='#1a1a1a';c.lineWidth=lw*.8;ballSeams(c,x,y,r);
-    c.strokeStyle='#f4f6f2';c.lineWidth=lw*1.1;c.beginPath();c.arc(x,y,r,0,7);c.stroke();c.restore();return}
+    c.strokeStyle='#ffb04d';c.lineWidth=lw*1.1;c.beginPath();c.arc(x,y,r,0,7);c.stroke();c.restore();return}
   c.save();c.fillStyle='#ff8a1f';c.strokeStyle='#1a1a1a';c.lineWidth=lw*.7;c.beginPath();c.arc(x,y,r,0,7);c.fill();c.stroke();
   c.lineWidth=lw*.55;ballSeams(c,x,y,r);c.restore()}
 const ballOff=r=>r*.95;
