@@ -262,10 +262,10 @@ html[data-lay=land] #v-chalk .ch-top{flex-wrap:wrap}html[data-lay=land] #v-chalk
 #v-chalk.chfs .col{grid-template-rows:minmax(0,1fr)!important;gap:0}
 #v-chalk.chfs .stage{grid-row:1!important;width:100%;height:100%}
 .fsbar{display:none}
-#v-chalk.chfs .fsbar{display:flex;position:absolute;z-index:5;gap:10px;align-items:center;left:0;right:0;bottom:max(env(safe-area-inset-bottom,0px),12px);justify-content:center}
-html[data-lay=land] #v-chalk.chfs .fsbar{left:auto;top:0;bottom:0;right:max(env(safe-area-inset-right,0px),14px);width:68px;flex-direction:column;justify-content:center;gap:9px}
-.chalkbtn{font:400 19px/1 var(--chalk);color:rgba(244,246,242,.78);background:rgba(244,246,242,.03);border:2px solid rgba(244,246,242,.5);border-radius:12px 8px 13px 7px/8px 13px 7px 11px;min-width:62px;height:38px;padding:0 12px;letter-spacing:.03em;cursor:pointer;transform:rotate(-1deg)}
-.chalkbtn:nth-child(2){transform:rotate(.8deg)}
+#v-chalk.chfs .fsbar{display:flex;position:absolute;z-index:5;gap:10px;align-items:center;left:0;right:0;bottom:calc(max(env(safe-area-inset-bottom,0px),0px) + 30px);justify-content:center}
+html[data-lay=land] #v-chalk.chfs .fsbar{left:auto;top:0;bottom:0;right:calc(max(env(safe-area-inset-right,0px),0px) + 30px);width:74px;flex-direction:column;justify-content:center;gap:9px}
+.chalkbtn{font:400 19px/1 var(--chalk);color:rgba(244,246,242,.78);background:rgba(244,246,242,.03);border:2px solid rgba(244,246,242,.5);border-radius:12px 8px 13px 7px/8px 13px 7px 11px;min-width:60px;height:38px;padding:0 11px;letter-spacing:.03em;cursor:pointer;transform:rotate(-1deg)}
+.chalkbtn:nth-child(even){transform:rotate(.8deg)}
 .chalkbtn[aria-pressed=true]{color:#ffe66b;border-color:rgba(255,230,107,.85);background:rgba(255,230,107,.07)}
 #fsrun{color:rgba(160,235,170,.9);border-color:rgba(160,235,170,.6)}
 .chalkbtn.fsx{min-width:0;width:34px;height:34px;padding:0;display:grid;place-items:center;transform:none;border-radius:50%;opacity:.7}.chalkbtn.fsx svg{width:16px;height:16px}
@@ -320,7 +320,7 @@ html[data-lay=land] .pvs2{display:grid!important;position:absolute;z-index:4;rig
     <div class="ch-row nw" id="ch-steps"></div>
     <div class="ch-row nw" id="ch-modes"></div></div>
   </div>
-  <div class="fsbar"><button class="chalkbtn" data-act="tool" data-v="cut" aria-pressed="true">Cut</button><button class="chalkbtn" data-act="tool" data-v="pass" aria-pressed="false">Pass</button><button class="chalkbtn" id="fsrun" data-act="run">Run</button><button class="chalkbtn fsx" id="fsx" data-act="chFs" aria-label="Exit full screen"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4v6H4M14 20v-6h6M10 10L3.5 3.5M14 14l6.5 6.5"/></svg></button></div>
+  <div class="fsbar"><button class="chalkbtn" data-act="tool" data-v="cut" aria-pressed="true">Cut</button><button class="chalkbtn" data-act="tool" data-v="dribble" aria-pressed="false">Dribble</button><button class="chalkbtn" data-act="tool" data-v="pass" aria-pressed="false">Pass</button><button class="chalkbtn" id="fsrun" data-act="run">Run</button><button class="chalkbtn fsx" id="fsx" data-act="chFs" aria-label="Exit full screen"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4v6H4M14 20v-6h6M10 10L3.5 3.5M14 14l6.5 6.5"/></svg></button></div>
 </section>
 <section class="view" id="v-team" hidden></section>
 
@@ -668,7 +668,7 @@ function fitBoard(){const bw=cv.parentElement,st=bw&&bw.parentElement,col=st&&st
   let bwid=Math.min(w,h*ar),bh=bwid/ar;
   if(!land&&half&&!fs){col.style.gridTemplateRows='auto '+bh+'px auto'}
   
-  if(fs){const L=document.documentElement.dataset.lay==='land';CHRES=L?{rb:0,rr:92}:{rb:68,rr:0};bw.style.cssText='width:'+w+'px;height:'+h+'px;flex:none;border-radius:0;box-shadow:none';return}
+  if(fs){const L=document.documentElement.dataset.lay==='land';CHRES=L?{rb:0,rr:122}:{rb:92,rr:0};bw.style.cssText='width:'+w+'px;height:'+h+'px;flex:none;border-radius:0;box-shadow:none';return}
   CHRES=null;
   bw.style.cssText='width:'+bwid+'px;height:'+bh+'px;flex:none;border-radius:12px;box-shadow:0 0 0 3px #5a4630,0 0 0 5px #3a2c1d'}
 let CHRES=null;
