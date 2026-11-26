@@ -262,12 +262,13 @@ html[data-lay=land] #v-chalk .ch-top{flex-wrap:wrap}html[data-lay=land] #v-chalk
 #v-chalk.chfs .col{grid-template-rows:minmax(0,1fr)!important;gap:0}
 #v-chalk.chfs .stage{grid-row:1!important;width:100%;height:100%}
 .fsbar{display:none}
-#v-chalk.chfs .fsbar{display:flex;position:absolute;z-index:5;gap:12px;align-items:center;left:0;right:0;bottom:max(env(safe-area-inset-bottom,0px),14px);justify-content:center}
-html[data-lay=land] #v-chalk.chfs .fsbar{left:auto;top:0;bottom:0;right:max(env(safe-area-inset-right,0px),14px);width:88px;flex-direction:column;justify-content:center}
-.chalkbtn{font:400 26px/1 var(--chalk);color:#f4f6f2;background:rgba(244,246,242,.05);border:2.5px solid rgba(244,246,242,.85);border-radius:16px 11px 17px 10px/11px 17px 10px 15px;min-width:92px;height:56px;padding:0 18px;letter-spacing:.03em;cursor:pointer;transform:rotate(-1.2deg)}
-.chalkbtn:nth-child(2){transform:rotate(1deg);border-radius:11px 17px 10px 16px/16px 10px 15px 11px}
-.chalkbtn[aria-pressed=true]{color:#ffe66b;border-color:#ffe66b;background:rgba(255,230,107,.1);box-shadow:0 0 14px rgba(255,230,107,.28)}
-.chalkbtn.fsx{min-width:0;width:46px;height:46px;padding:0;display:grid;place-items:center;transform:none;border-radius:50%;opacity:.8}
+#v-chalk.chfs .fsbar{display:flex;position:absolute;z-index:5;gap:10px;align-items:center;left:0;right:0;bottom:max(env(safe-area-inset-bottom,0px),12px);justify-content:center}
+html[data-lay=land] #v-chalk.chfs .fsbar{left:auto;top:0;bottom:0;right:max(env(safe-area-inset-right,0px),14px);width:68px;flex-direction:column;justify-content:center;gap:9px}
+.chalkbtn{font:400 19px/1 var(--chalk);color:rgba(244,246,242,.78);background:rgba(244,246,242,.03);border:2px solid rgba(244,246,242,.5);border-radius:12px 8px 13px 7px/8px 13px 7px 11px;min-width:62px;height:38px;padding:0 12px;letter-spacing:.03em;cursor:pointer;transform:rotate(-1deg)}
+.chalkbtn:nth-child(2){transform:rotate(.8deg)}
+.chalkbtn[aria-pressed=true]{color:#ffe66b;border-color:rgba(255,230,107,.85);background:rgba(255,230,107,.07)}
+#fsrun{color:rgba(160,235,170,.9);border-color:rgba(160,235,170,.6)}
+.chalkbtn.fsx{min-width:0;width:34px;height:34px;padding:0;display:grid;place-items:center;transform:none;border-radius:50%;opacity:.7}.chalkbtn.fsx svg{width:16px;height:16px}
 html[data-lay=land] #v-chalk.chfs .col{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important}
 html[data-lay=land] #v-chalk.chfs .ch-ctl{grid-column:2!important;grid-row:1!important;overflow-y:auto;justify-content:center}
 html[data-lay=land] #v-chalk.chfs .ch-row.nw{flex-wrap:wrap}html[data-lay=land] #v-chalk.chfs #ch-tools .cbtn{flex:1 1 28%}
@@ -319,7 +320,7 @@ html[data-lay=land] .pvs2{display:grid!important;position:absolute;z-index:4;rig
     <div class="ch-row nw" id="ch-steps"></div>
     <div class="ch-row nw" id="ch-modes"></div></div>
   </div>
-  <div class="fsbar"><button class="chalkbtn" data-act="tool" data-v="cut" aria-pressed="true">Cut</button><button class="chalkbtn" data-act="tool" data-v="pass" aria-pressed="false">Pass</button><button class="chalkbtn fsx" id="fsx" data-act="chFs" aria-label="Exit full screen"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4v6H4M14 20v-6h6M10 10L3.5 3.5M14 14l6.5 6.5"/></svg></button></div>
+  <div class="fsbar"><button class="chalkbtn" data-act="tool" data-v="cut" aria-pressed="true">Cut</button><button class="chalkbtn" data-act="tool" data-v="pass" aria-pressed="false">Pass</button><button class="chalkbtn" id="fsrun" data-act="run">Run</button><button class="chalkbtn fsx" id="fsx" data-act="chFs" aria-label="Exit full screen"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4v6H4M14 20v-6h6M10 10L3.5 3.5M14 14l6.5 6.5"/></svg></button></div>
 </section>
 <section class="view" id="v-team" hidden></section>
 
@@ -667,10 +668,13 @@ function fitBoard(){const bw=cv.parentElement,st=bw&&bw.parentElement,col=st&&st
   let bwid=Math.min(w,h*ar),bh=bwid/ar;
   if(!land&&half&&!fs){col.style.gridTemplateRows='auto '+bh+'px auto'}
   
-  if(fs){const L=document.documentElement.dataset.lay==='land';CHRES=L?{rb:0,rr:116}:{rb:92,rr:0};bw.style.cssText='width:'+w+'px;height:'+h+'px;flex:none;border-radius:0;box-shadow:none';return}
+  if(fs){const L=document.documentElement.dataset.lay==='land';CHRES=L?{rb:0,rr:92}:{rb:68,rr:0};bw.style.cssText='width:'+w+'px;height:'+h+'px;flex:none;border-radius:0;box-shadow:none';return}
   CHRES=null;
   bw.style.cssText='width:'+bwid+'px;height:'+bh+'px;flex:none;border-radius:12px;box-shadow:0 0 0 3px #5a4630,0 0 0 5px #3a2c1d'}
 let CHRES=null;
+(function(){const t=document.createElement('canvas'),S=360;t.width=t.height=S;const g=t.getContext('2d'),R=chRng(91);g.fillStyle='#f4f6f2';
+  for(let i=0;i<520;i++){g.globalAlpha=.03+R()*.08;const z=.5+R()*1.5;g.fillRect(R()*S,R()*S,z,z)}
+  const v=$('#v-chalk');v.style.backgroundColor='#050505';v.style.backgroundImage='url('+t.toDataURL('image/png')+')';v.style.backgroundSize=S+'px '+S+'px'})();
 function redraw(){if(U.tab!=='chalk')return;fitBoard();curView=drawBoard(cv,B.play,{step:B.step,showDef:B.showDef,sel:B.drag&&B.drag.sel,preview:B.preview,pos:B.runPos,ball:B.runBall,running:!!(B.run||B.done),chalk:true,res:CHRES});if(typeof fitTitle==='function')fitTitle()}
 new ResizeObserver(redraw).observe($('#v-chalk .col'));
 document.addEventListener('fullscreenchange',()=>{const v=$('#v-chalk');if(!document.fullscreenElement&&v._fsReq&&v.classList.contains('chfs')){v.classList.remove('chfs');v._fsReq=false;requestAnimationFrame(redraw)}});
@@ -760,6 +764,7 @@ function setHint(){
   else if(!ms)h.textContent='Drag from a player to draw a line.';
   else h.textContent=`Step ${B.step}: drag from a player to draw.`}
 function updateChalkUI(){
+  {const r=$('#fsrun');if(r)r.textContent=B.run?'Stop':B.done?'Again':'Run'}
   $$('.fsbar [data-v]').forEach(b=>b.setAttribute('aria-pressed',String(B.mode==='draw'&&B.tool===b.dataset.v)));
   const p=B.play;
   document.querySelector('[data-act=chSave]').textContent=B.dirty?'Save •':'Save';
