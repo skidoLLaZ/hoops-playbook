@@ -800,7 +800,7 @@ addEventListener('keydown',e=>{if(e.key==='Escape')closeViewer()});
 /* ===== playbook ===== */
 const TAGS=['All','Offense','Defense','Inbounds','Press break','Press'];
 const QCOL=['#d9342b','#7fb03c','#e07b15','#6c2e9b'];
-const catChips=side=>[['a','All'],['half','Half court'],['press',side==='o'?'Press break':'Press'],['inb','Inbounds']];
+const catChips=side=>[['half','Half court'],['press',side==='o'?'Press break':'Press'],['inb','Inbounds'],['a','All']];
 function filterPanel(){
   const sideL={o:'Offense',d:'Defense',a:'Off & Def'}[U.fside],catL=catChips(U.fside).find(x=>x[0]===U.fcat)[1];
   const sum=`<span class="sum-q" style="background:${QCOL[S.q]}">${PL()}${S.q+1}</span><span class="sum-dot">·</span>${sideL}<span class="sum-dot">·</span>${U.fcat==='a'?'All types':catL}`;
