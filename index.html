@@ -250,6 +250,15 @@ html[data-lay=land] #v-chalk .ch-top{flex-wrap:wrap}html[data-lay=land] #v-chalk
 }
 .play:not(.open) .jobs,.play:not(.open) .prow{display:none}.play .ptop .btn.on{background:var(--accbg,#dbe6ff)}
 .ptop .nm{display:flex;align-items:center;gap:8px;min-width:0}.ptop .nm h3{margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ibtn{padding:2px 9px;flex:none}
+#pv{position:fixed;inset:0;z-index:300;background:var(--bg);display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;gap:10px;padding:max(env(safe-area-inset-top,0px),12px) max(env(safe-area-inset-right,0px),14px) max(env(safe-area-inset-bottom,0px),14px) max(env(safe-area-inset-left,0px),14px);animation:pvin .18s ease-out}
+@keyframes pvin{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:none}}
+.pvtop{display:flex;align-items:center;gap:12px;min-width:0}.pvtop h2{margin:0;flex:1;min-width:0;font:800 30px/1 var(--display);text-transform:uppercase;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pvstage{display:flex;align-items:center;justify-content:center;min-height:0;min-width:0}
+.pvbw{position:relative;flex:none;border-radius:12px;overflow:hidden;box-shadow:0 0 0 3px #5a4630,0 0 0 5px #3a2c1d}.pvbw canvas{display:block;width:100%;height:100%}
+.pvctl{display:flex;flex-direction:column;gap:10px;max-height:34vh;overflow-y:auto;background:transparent!important;border:0!important;box-shadow:none!important}
+.pvbtns{display:flex;gap:10px}.pvbtns .btn{flex:1;padding:12px 16px;font-size:16px}.pvbtns .btn[hidden]{display:none}
+html[data-lay=land] #pv{grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+html[data-lay=land] #pv .pvtop{grid-column:1/3}html[data-lay=land] #pv .pvstage{grid-column:1;grid-row:2}html[data-lay=land] #pv .pvctl{grid-column:2;grid-row:2;max-height:none;min-width:240px}
 </style></head>
 <body><div id="splash"><svg id="splash-ic" width="140" height="140" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><filter id="sf" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2"/></filter><radialGradient id="sv" cx=".5" cy=".4" r=".8"><stop offset="0" stop-color="#1a1d24"/><stop offset="1" stop-color="#0b0b0d"/></radialGradient></defs><rect width="100" height="100" fill="url(#sv)"/><g filter="url(#sf)" opacity=".85"><g fill="none" stroke="#ff7a1a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><rect x="24" y="18" width="52" height="68" rx="6"/><rect x="38" y="11" width="24" height="12" rx="4"/><path d="M34 42l8 8m0-8l-8 8"/><circle cx="62" cy="46" r="4.8"/><path d="M36 72C46 72 56 66 60 55" stroke-dasharray="3.5 3"/><path d="M55 56l5.5-2 1.5 6"/></g></g><g fill="none" stroke="#ff7a1a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><rect x="24" y="18" width="52" height="68" rx="6"/><rect x="38" y="11" width="24" height="12" rx="4"/><path d="M34 42l8 8m0-8l-8 8"/><circle cx="62" cy="46" r="4.8"/><path d="M36 72C46 72 56 66 60 55" stroke-dasharray="3.5 3"/><path d="M55 56l5.5-2 1.5 6"/></g></svg><b>Up Top</b></div><script>(function(){function go(){var e=document.getElementById("splash");if(!e)return;e.classList.add("out");setTimeout(function(){e.remove()},500)}addEventListener("load",function(){setTimeout(go,500)});setTimeout(go,2500)})()</script>
 <section class="view" id="v-playbook"></section>
@@ -747,11 +756,12 @@ const stepMs=(p,s)=>p.actions.some(a=>a.step===s&&a.kind==='pass')&&!p.actions.s
 function stepAt(p,ms,el){for(let s=1;s<=ms;s++){const d=stepMs(p,s);if(el<d)return{s,u:el/d};el-=d}return null}
 function endState(p,ms,off){const pos=posAt(p,ms+1),h=ballAt(p,ms+1);return{pos,ball:{x:pos[h].x+off,y:pos[h].y-off}}}
 let cardRun=null;
-function cardUI(cv,mode){const card=cv.closest('.play');if(!card)return;const b=card.querySelector('button[data-act=runCard]'),r=card.querySelector('[data-act=cardReset]');
+const cardOf=cv=>cv.closest('.play')||(cv.closest('#pv')&&cv.closest('#pv').querySelector('.pvctl'));
+function cardUI(cv,mode){const card=cardOf(cv);if(!card)return;const b=card.querySelector('button[data-act=runCard]'),r=card.querySelector('[data-act=cardReset]');
   if(b)b.textContent=mode==='done'?'↻ Re-run':mode==='run'?'■ Stop':'▶ Run';if(r)r.hidden=mode!=='done'}
 function stopCard(){if(!cardRun)return;cancelAnimationFrame(cardRun.raf);const c=cardRun;cardRun=null;drawBoard(c.cv,c.play,{step:0,thumb:true,showDef:true});cardUI(c.cv,'idle')}
 function runCard(t){
-  const p=S.plays.find(x=>x.id===t.dataset.id),cv=(t.closest('.play')||t).querySelector('canvas');if(!p||!cv)return;
+  const p=S.plays.find(x=>x.id===t.dataset.id),pv=t.closest('#pv'),cv=pv?pv.querySelector('canvas'):(t.closest('.play')||t).querySelector('canvas');if(!p||!cv)return;
   if(cardRun&&cardRun.cv===cv){stopCard();return}
   stopCard();const ms=maxStep(p);
   if(!ms){toast('No lines on this play yet. Tap Edit to draw it.');return}
@@ -767,6 +777,26 @@ function runCard(t){
     drawBoard(cv,p,{thumb:true,step:s,pos,ball,running:true,showDef:true});me.raf=requestAnimationFrame(tick)};
   me.raf=requestAnimationFrame(tick)}
 
+
+/* ===== full-screen play viewer ===== */
+let PV_JOBS=null,pvId=null;
+function pvFit(){const o=document.getElementById('pv');if(!o)return;const p=S.plays.find(x=>x.id===pvId);if(!p)return;
+  const st=o.querySelector('.pvstage'),bw=o.querySelector('.pvbw'),cv=bw.querySelector('canvas'),half=p.court!=='full',ar=half?50.8/47.6:50.8/99.2;
+  const land=document.documentElement.dataset.lay==='land';
+  st.style.width='';let h=st.clientHeight,w=st.clientWidth;if(land){w=Math.min(h*ar,o.clientWidth*.62);st.style.width=w+'px'}let W=Math.min(w,h*ar),H=W/ar;
+  bw.style.width=W+'px';bw.style.height=H+'px';
+  if(cardRun&&cardRun.cv===cv)return;
+  drawBoard(cv,p,{step:0,thumb:true,showDef:true})}
+function openViewer(id){const p=S.plays.find(x=>x.id===id);if(!p)return;closeViewer();pvId=id;
+  const o=document.createElement('div');o.id='pv';o.setAttribute('role','dialog');o.setAttribute('aria-label',p.name);
+  const jobs=PV_JOBS?PV_JOBS(p):'';
+  o.innerHTML=`<div class="pvtop"><button class="btn sm" data-act="pvClose" aria-label="Close">✕</button><h2>${esc(p.name)}</h2><button class="btn sm" data-act="pvEdit" data-id="${id}">Edit</button></div>
+   <div class="pvstage"><div class="pvbw"><canvas></canvas></div></div>
+   <div class="pvctl play open pvplay" data-id="${id}"><div class="pvbtns"><button class="btn go" data-act="runCard" data-id="${id}">▶ Run</button><button class="btn" data-act="cardReset" data-id="${id}" hidden>⟲ Reset</button></div>${jobs}</div>`;
+  document.body.appendChild(o);pvFit();requestAnimationFrame(pvFit)}
+function closeViewer(){const o=document.getElementById('pv');if(!o)return;stopCard();o.remove();pvId=null}
+addEventListener('resize',()=>{if(document.getElementById('pv'))pvFit()});
+addEventListener('keydown',e=>{if(e.key==='Escape')closeViewer()});
 /* ===== playbook ===== */
 const TAGS=['All','Offense','Defense','Inbounds','Press break','Press'];
 const QCOL=['#d9342b','#7fb03c','#e07b15','#6c2e9b'];
@@ -789,7 +819,8 @@ function renderPlaybook(){
       const who=n=>nameAt(n)||spot(n-1),verb=a=>a.kind==='pass'?'passes to '+who(+a.to.slice(1)):a.kind==='cut'?(a.after?'cuts off '+who(+a.after.slice(1))+'\'s screen':'cuts'):a.kind==='dribble'?(a.after?'dribbles off '+who(+a.after.slice(1))+'\'s screen':'dribbles'):'sets a screen';
       L.push(`<li><span class="sdot ${S.posNames?'sm':''}">${spot(q.n-1)}</span><span><b>${esc(nameAt(q.n)||spot(q.n-1))}</b> ${acts.map(verb).join(', then ')}</span></li>`)}
     return L.length?`<ul class="jobs">${L.join('')}</ul>`:''};
-  const card=p=>`<div class="card play" data-act="runCard" data-id="${p.id}"><canvas data-thumb="${p.id}" style="aspect-ratio:${p.court==='full'?'50.8/99.2':'50.8/47.6'};background:#b98650"></canvas>
+  PV_JOBS=jobs;
+  const card=p=>`<div class="card play" data-act="viewPlay" data-id="${p.id}"><canvas data-thumb="${p.id}" style="aspect-ratio:${p.court==='full'?'50.8/99.2':'50.8/47.6'};background:#b98650"></canvas>
     <button class="more" data-act="playMenu" data-id="${p.id}" aria-label="More">⋯</button>
     <div class="pb"><div class="ptop"><span class="nm"><h3>${esc(p.name)}</h3><button class="btn sm ibtn" data-act="cardInfo" data-id="${p.id}" aria-label="Show details" aria-expanded="false">ⓘ</button></span><span style="display:flex;gap:6px;flex:none"><button class="btn sm" data-act="cardReset" data-id="${p.id}" hidden>⟲ Reset</button><button class="btn sm go" data-act="runCard" data-id="${p.id}">▶ Run</button></span></div>${jobs(p)}<div class="prow"><div class="tags">${p.tags.map(t=>`<span class="tag ${p.focus==='d'?'d':'o'}">${esc(t)}</span>`).join('')}</div><button class="btn sm" data-act="openPlay" data-id="${p.id}">Edit</button></div></div></div>`;
   const sect=(sd,c)=>grp(sd,c).length?`<div class="sect"><div class="eyebrow">${CATH[sd][c]}</div><div class="grid ${grp(sd,c).every(p=>p.court==='full')?'full':'half'}">${grp(sd,c).map(card).join('')}</div></div>`:'';
@@ -951,8 +982,11 @@ function applyTheme(){const r=document.documentElement;if(S.settings.theme==='sy
 /* ===== actions ===== */
 const act={
   runCard:t=>runCard(t),
+  viewPlay:t=>openViewer(t.dataset.id),
+  pvClose:()=>closeViewer(),
+  pvEdit:t=>{const id=t.dataset.id;closeViewer();const p=S.plays.find(x=>x.id===id);if(p)guardDirty(()=>openPlayOnBoard(p))},
   cardInfo:(t,e)=>{e.stopPropagation();const c=t.closest('.play'),o=c.classList.toggle('open');t.setAttribute('aria-expanded',o);t.classList.toggle('on',o)},
-  cardReset:t=>{const cv=t.closest('.play').querySelector('canvas'),p=S.plays.find(x=>x.id===t.dataset.id);if(cardRun&&cardRun.cv===cv)stopCard();drawBoard(cv,p,{step:0,thumb:true,showDef:true});cardUI(cv,'idle')},
+  cardReset:t=>{const pv=t.closest('#pv'),cv=pv?pv.querySelector('canvas'):t.closest('.play').querySelector('canvas'),p=S.plays.find(x=>x.id===t.dataset.id);if(cardRun&&cardRun.cv===cv)stopCard();drawBoard(cv,p,{step:0,thumb:true,showDef:true});cardUI(cv,'idle')},
   posNames:t=>{S.posNames=t.dataset.v==='1';persist();renderTeam()},
   setPeriod:t=>{S.q=+t.dataset.v;persist();U.tab==='playbook'?renderPlaybook():renderTeam()},
   fmt:t=>{S.periods=+t.dataset.v;fixLU();persist();renderTeam()},
