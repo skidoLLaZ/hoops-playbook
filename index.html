@@ -355,7 +355,10 @@ function mkPlayers(court,off,def){
 function newPlay(o={}){
   const court=o.court||'half',off=o.off||(court==='full'?'Inbound spread':'5-Out'),def=o.def||'None';
   const p={id:uid(),name:'New play',court,tags:['Offense'],off,def,ball:'o1',actions:[],notes:'',by:'You',...o};
-  p.players=o.players||mkPlayers(court,off,def);normPlay(p);return p}
+  p.players=o.players||mkPlayers(court,off,def);
+  if(!o.players&&court==='half'&&off==='5-Out'){let lw=12;try{if(S.team.level==='pro')lw=16}catch(e){}const by=7.6;/* 4 and 5 start on the blocks */
+    const q4=p.players.find(q=>q.id==='o4'),q5=p.players.find(q=>q.id==='o5');if(q4){q4.x=25-lw/2-.7;q4.y=by}if(q5){q5.x=25+lw/2+.7;q5.y=by}}
+  normPlay(p);return p}
 const SIDEL={o:'Offense',d:'Defense'};
 const CATL={o:{half:'Half court play',press:'Press break',inb:'Inbounds play'},d:{half:'Half court defense',press:'Press',inb:'Inbounds defense'}};
 const CATH={o:{half:'Offense · Half court plays',press:'Offense · Press breaks',inb:'Offense · Inbounds plays'},d:{half:'Defense · Half court defense',press:'Defense · Presses',inb:'Defense · Inbounds defense'}};
