@@ -277,6 +277,7 @@ html[data-lay=land] #v-chalk.chfs .ch-row.nw{flex-wrap:wrap}html[data-lay=land] 
 #v-playbook .grid.half{grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr))}
 #v-playbook .grid.full{grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr))}
 #v-team .col{max-width:860px}
+.cthd{display:flex;align-items:center;gap:8px;background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;flex:1;justify-content:flex-start;text-align:left}.ctchev{font-size:18px;opacity:.7;width:20px;text-align:center}
 @media (min-width:640px){
   .filter{flex-direction:row;flex-wrap:wrap;gap:8px 18px;align-items:center}
   .filter>.f-row{flex:1 1 280px}.filter>.f-who{flex:1 1 100%}
@@ -1018,6 +1019,7 @@ const first=n=>String(n||'').trim().split(/\s+/)[0];
 const pname=id=>{const p=S.roster.find(x=>x.id===id);return p?p:null};
 const POS=['PG','SG','SF','PF','C'],POSN=['Point guard','Shooting guard','Small forward','Power forward','Center'];
 const spot=i=>S.posNames?POS[i]:String(i+1);
+function ctSum(lu,R){const n=lu.filter(Boolean).length,nm=lu.map((id,i)=>{const p=id&&R.find(x=>x.id===id);return p?(p.num?'#'+p.num+' ':'')+p.name:null}).filter(Boolean);return`<div class="muted ctsum" style="font-size:14px">${n?esc(nm.join(', '))+(n<5?' · '+(5-n)+' open':''):'No one set yet · 5 open'}</div>`}
 const ctQ=()=>U.cq==='a'?'a':Math.min(U.cq===undefined?S.q:U.cq,S.lineups.length-1);
 function renderCourt(){
   const v=$('#tbody'),R=S.roster;
@@ -1027,8 +1029,8 @@ function renderCourt(){
     <div class="seg" role="group" aria-label="Show period">${S.lineups.map((_,k)=>`<button class="pq" data-k="${k}" data-act="ctQ" data-v="${k}" aria-pressed="${ctQ()===k}">${PL()}${k+1}</button>`).join('')}<button data-act="ctQ" data-v="a" aria-pressed="${ctQ()==='a'}">All</button></div>
     <p class="muted" style="font-size:14px">Set who plays each spot in every ${PL()==='H'?'half':'quarter'}. Spots 1–5 are the numbers on the plays.</p>
     ${R.length?`<button class="btn acc" data-act="autoFill">Auto-fill fair rotation</button>`:'<p class="note">Add players first, then pick who is on the court.</p>'}</div>
-   ${S.lineups.map((lu,k)=>ctQ()!=='a'&&ctQ()!==k?'':`<div class="card pad tight" style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div class="seg" style="flex:none"><button class="pq" data-k="${k}" aria-pressed="true" data-act="setPeriodStay" data-v="${k}">${PL()==='H'?'Half':'Quarter'} ${k+1}</button></div>${R.length?`<button class="btn sm" data-act="clearPeriod" data-v="${k}">Clear</button>`:''}</div>
-    ${[0,1,2,3,4].map(i=>`<div style="display:flex;align-items:center;gap:10px"><span class="sdot ${S.posNames?'sm':''}">${spot(i)}</span><select data-p="${k}" data-lineup="${i}" aria-label="${(PL()==='H'?'Half ':'Quarter ')+(k+1)+' '+(S.posNames?POSN[i]:'spot '+(i+1))}"><option value="">Open</option>${R.map(p=>`<option value="${p.id}" ${lu[i]===p.id?'selected':''}>${esc(p.num?'#'+p.num+' ':'')}${esc(p.name)}</option>`).join('')}</select></div>`).join('')}</div>`).join('')}
+   ${S.lineups.map((lu,k)=>ctQ()!=='a'&&ctQ()!==k?'':`<div class="card pad tight" style="display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><button class="cthd" data-act="ctFold" data-v="${k}" aria-expanded="${!(U.cf||{})[k]}" aria-label="${(U.cf||{})[k]?'Expand':'Minimize'} ${PL()==='H'?'half':'quarter'} ${k+1}"><span class="seg" style="flex:none;pointer-events:none"><span class="pq" data-k="${k}" aria-pressed="true" style="display:inline-flex;align-items:center;padding:0 14px;min-height:34px;border-radius:999px;font-weight:700">${PL()==='H'?'Half':'Quarter'} ${k+1}</span></span><span class="ctchev" aria-hidden="true">${(U.cf||{})[k]?'▸':'▾'}</span></button>${R.length&&!(U.cf||{})[k]?`<button class="btn sm" data-act="clearPeriod" data-v="${k}">Clear</button>`:''}</div>
+    ${(U.cf||{})[k]?ctSum(lu,R):[0,1,2,3,4].map(i=>`<div style="display:flex;align-items:center;gap:10px"><span class="sdot ${S.posNames?'sm':''}">${spot(i)}</span><select data-p="${k}" data-lineup="${i}" aria-label="${(PL()==='H'?'Half ':'Quarter ')+(k+1)+' '+(S.posNames?POSN[i]:'spot '+(i+1))}"><option value="">Open</option>${R.map(p=>`<option value="${p.id}" ${lu[i]===p.id?'selected':''}>${esc(p.num?'#'+p.num+' ':'')}${esc(p.name)}</option>`).join('')}</select></div>`).join('')}</div>`).join('')}
   </div>`}
 function renderRoster(){
   const v=$('#tbody'),R=S.roster;
@@ -1126,6 +1128,7 @@ const act={
   step:t=>{B.step=+t.dataset.v;updateChalkUI();redraw()},
   run:()=>runPlay(),
   runReset:()=>stopRun(),
+  ctFold:t=>{U.cf=U.cf||{};U.cf[t.dataset.v]=!U.cf[t.dataset.v];renderCourt()},
   ctQ:t=>{U.cq=t.dataset.v==='a'?'a':+t.dataset.v;renderCourt()},
   waitSet:t=>{const a=B.play.actions.find(x=>x.id===t.dataset.aid);if(a){pushUndo();a.after=t.dataset.sc;B.dirty=true}closeSheet();updateChalkUI();redraw()},
   undo:()=>undo(),
